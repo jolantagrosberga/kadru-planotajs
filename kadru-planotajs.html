@@ -290,7 +290,7 @@ header {
 }
 .bubble-overlay {
   position: absolute; inset: 0;
-  pointer-events: none;
+  pointer-events: none; /* children override this */
 }
  
 /* Frame controls row */
@@ -370,19 +370,24 @@ header {
 .bshape.thought { border-radius: 50%; min-width: 88px; min-height: 48px; display:flex; align-items:center; justify-content:center; }
 .bshape.shout   { border-radius: 3px; background: #fff9c4;
   clip-path: polygon(5% 0%,95% 0%,100% 5%,100% 95%,95% 100%,5% 100%,0% 95%,0% 5%); }
-.btail {
-  position:absolute; bottom:-13px; left:16px;
-  width:0; height:0;
-  border-left:7px solid transparent;
-  border-right:6px solid transparent;
-  border-top:13px solid var(--text);
+.btail-handle {
+  position:absolute;
+  width:12px; height:12px;
+  background: var(--gold);
+  border: 2px solid var(--text);
+  border-radius:50%;
+  cursor:grab;
+  z-index:20;
+  touch-action:none;
 }
-.btail::after {
-  content:''; position:absolute; bottom:2px; left:-5px;
-  width:0; height:0;
-  border-left:5px solid transparent;
-  border-right:5px solid transparent;
-  border-top:11px solid white;
+.btail-handle:active { cursor:grabbing; }
+.btail-svg {
+  position:absolute;
+  inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  overflow:visible;
+  z-index:1;
 }
 .tdots { position:absolute; bottom:-17px; left:12px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .tdot  { background:white; border:2px solid var(--text); border-radius:50%; }
@@ -455,7 +460,7 @@ header {
  
 <header>
   <div>
-    <div class="header-eyebrow">Interaktīvs metodiskais materiāls</div>
+    <div class="header-eyebrow">Interaktīvs metodiskais materiāls · 4.2</div>
     <div class="logo">Kadru <span>Plānotājs</span></div>
   </div>
   <div class="header-actions">
@@ -1148,44 +1153,191 @@ function fxLeaves(ctx,ip,w,h){
 }
  
 // ── BUBBLES ──
-function addBubble(type){
+function addBubble(type, restoreData){
   const overlay=document.getElementById('bubble-overlay');
   const stage=document.getElementById('canvas-stage');
-  const stW=stage.clientWidth,stH=stage.clientHeight;
+  const stW=stage.clientWidth, stH=stage.clientHeight;
+ 
   const bubble=document.createElement('div');
-  bubble.className='comic-bubble';bubble.style.left=(stW*.28)+'px';bubble.style.top=(stH*.12)+'px';bubble.dataset.type=type;
-  const shape=document.createElement('div');shape.className='bshape '+type;
-  const inp=document.createElement('textarea');inp.className='binput';inp.rows=2;
+  bubble.className='comic-bubble';
+  bubble.style.cssText=`left:${restoreData?.x||Math.round(stW*.2)+'px'};top:${restoreData?.y||Math.round(stH*.12)+'px'};pointer-events:all;`;
+  bubble.dataset.type=type;
+ 
+  // SVG for tail line (speech/thought)
+  let svg=null, tailLine=null, tailCircles=null;
+  if(type==='speech'||type==='thought'){
+    svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.classList.add('btail-svg');
+    svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    bubble.appendChild(svg);
+  }
+ 
+  const shape=document.createElement('div');
+  shape.className='bshape '+type;
+  shape.style.position='relative';
+  shape.style.zIndex='2';
+ 
+  const inp=document.createElement('textarea');
+  inp.className='binput'; inp.rows=2;
   inp.placeholder=type==='thought'?'Doma...':type==='shout'?'AAAAAA!':'Saki kaut ko...';
-  inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';});
+  inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=inp.scrollHeight+'px'; updateTailSvg();});
+  if(restoreData?.text) inp.value=restoreData.text;
   shape.appendChild(inp);
-  if(type==='speech'){const t=document.createElement('div');t.className='btail';shape.appendChild(t);}
-  else if(type==='thought'){const dots=document.createElement('div');dots.className='tdots';[10,7,4].forEach(s=>{const d=document.createElement('div');d.className='tdot';d.style.width=d.style.height=s+'px';dots.appendChild(d);});shape.appendChild(dots);}
-  const del=document.createElement('button');del.className='bdel';del.textContent='×';del.onclick=()=>bubble.remove();
-  bubble.appendChild(shape);bubble.appendChild(del);overlay.appendChild(bubble);
-  makeDraggable(bubble);inp.focus();
+ 
+  if(type==='thought'){
+    const dots=document.createElement('div'); dots.className='tdots';
+    [10,7,4].forEach(s=>{const d=document.createElement('div');d.className='tdot';d.style.width=d.style.height=s+'px';dots.appendChild(d);});
+    shape.appendChild(dots);
+  }
+ 
+  bubble.appendChild(shape);
+ 
+  // Delete button
+  const del=document.createElement('button');
+  del.className='bdel'; del.textContent='×';
+  del.onclick=(e)=>{e.stopPropagation();bubble.remove();};
+  bubble.appendChild(del);
+ 
+  // Tail handle (draggable knābītis)
+  let tailHandle=null, tailTx=0, tailTy=0;
+  if(type==='speech'||type==='thought'){
+    tailHandle=document.createElement('div');
+    tailHandle.className='btail-handle';
+    tailHandle.title='Vilkt knābīti';
+    // Default tail position: below-left of bubble
+    tailTx = restoreData?.tailTx ?? 10;
+    tailTy = restoreData?.tailTy ?? 60;
+    tailHandle.style.left=tailTx+'px';
+    tailHandle.style.top=tailTy+'px';
+    bubble.appendChild(tailHandle);
+    bubble.dataset.tailTx=tailTx;
+    bubble.dataset.tailTy=tailTy;
+ 
+    // Draw SVG tail
+    function updateTailSvg(){
+      if(!svg) return;
+      const bW=shape.offsetWidth, bH=shape.offsetHeight;
+      // Attach point on bubble border (closest point on box to tail tip)
+      const cx=bW/2, cy=bH/2;
+      const dx=tailTx-cx, dy=tailTy-cy;
+      const len=Math.sqrt(dx*dx+dy*dy)||1;
+      const r=Math.min(bW,bH)/2;
+      const ax=cx+dx/len*r*0.9, ay=cy+dy/len*r*0.9;
+ 
+      // Clear svg
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+ 
+      if(type==='speech'){
+        // Triangle tail
+        const perp=[-dy/len*7, dx/len*7];
+        const p1=[ax+perp[0], ay+perp[1]];
+        const p2=[ax-perp[0], ay-perp[1]];
+        const tip=[tailTx, tailTy];
+        // White fill polygon
+        const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        poly.setAttribute('points',`${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${tip[0]},${tip[1]}`);
+        poly.setAttribute('fill','white');
+        poly.setAttribute('stroke','#2c2318');
+        poly.setAttribute('stroke-width','2');
+        poly.setAttribute('stroke-linejoin','round');
+        svg.appendChild(poly);
+      } else {
+        // Thought: dots trail
+        const steps=4;
+        for(let i=0;i<steps;i++){
+          const t=(i+1)/(steps+1);
+          const cx2=ax+(tailTx-ax)*t, cy2=ay+(tailTy-ay)*t;
+          const r2=5-i;
+          const c2=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          c2.setAttribute('cx',cx2); c2.setAttribute('cy',cy2); c2.setAttribute('r',Math.max(r2,2));
+          c2.setAttribute('fill','white'); c2.setAttribute('stroke','#2c2318'); c2.setAttribute('stroke-width','1.5');
+          svg.appendChild(c2);
+        }
+      }
+    }
+    setTimeout(updateTailSvg, 30);
+ 
+    // Drag tail handle
+    function tailDragStart(e){
+      e.stopPropagation(); e.preventDefault();
+      function onMove(e){
+        const src=e.touches?e.touches[0]:e;
+        const br=bubble.getBoundingClientRect();
+        tailTx=src.clientX-br.left;
+        tailTy=src.clientY-br.top;
+        tailHandle.style.left=(tailTx-6)+'px';
+        tailHandle.style.top=(tailTy-6)+'px';
+        bubble.dataset.tailTx=tailTx;
+        bubble.dataset.tailTy=tailTy;
+        updateTailSvg();
+      }
+      function onUp(){
+        document.removeEventListener('mousemove',onMove);
+        document.removeEventListener('mouseup',onUp);
+        document.removeEventListener('touchmove',onMove);
+        document.removeEventListener('touchend',onUp);
+      }
+      document.addEventListener('mousemove',onMove);
+      document.addEventListener('mouseup',onUp);
+      document.addEventListener('touchmove',onMove,{passive:false});
+      document.addEventListener('touchend',onUp);
+    }
+    tailHandle.addEventListener('mousedown',tailDragStart);
+    tailHandle.addEventListener('touchstart',e=>{e.preventDefault();tailDragStart(e);},{passive:false});
+  }
+ 
+  overlay.appendChild(bubble);
+ 
+  // Drag whole bubble
+  makeDraggable(bubble, ()=>{ if(tailHandle) updateTailSvg(); });
+ 
+  if(!restoreData) setTimeout(()=>inp.focus(),50);
 }
  
-function makeDraggable(el){
-  el.addEventListener('mousedown',e=>{
-    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='BUTTON')return;
-    const dx=e.clientX-el.offsetLeft,dy=e.clientY-el.offsetTop;
-    function mv(e){el.style.left=(e.clientX-dx)+'px';el.style.top=(e.clientY-dy)+'px';}
-    function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
-  });
+function makeDraggable(el, onMove){
+  function startDrag(e){
+    const tgt=e.target||e.srcElement;
+    if(tgt.tagName==='TEXTAREA'||tgt.tagName==='BUTTON'||tgt.classList.contains('btail-handle')) return;
+    e.preventDefault();
+    const overlay=document.getElementById('bubble-overlay');
+    const oRect=overlay.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    const startX=src.clientX, startY=src.clientY;
+    const origL=parseInt(el.style.left)||0, origT=parseInt(el.style.top)||0;
+    function mv(e){
+      const s=e.touches?e.touches[0]:e;
+      el.style.left=(origL+s.clientX-startX)+'px';
+      el.style.top=(origT+s.clientY-startY)+'px';
+      if(onMove) onMove();
+    }
+    function up(){
+      document.removeEventListener('mousemove',mv);
+      document.removeEventListener('mouseup',up);
+      document.removeEventListener('touchmove',mv);
+      document.removeEventListener('touchend',up);
+    }
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+    document.addEventListener('touchmove',mv,{passive:false});
+    document.addEventListener('touchend',up);
+  }
+  el.addEventListener('mousedown',startDrag);
+  el.addEventListener('touchstart',e=>{e.preventDefault();startDrag(e);},{passive:false});
 }
-function collectBubbles(){return Array.from(document.querySelectorAll('.comic-bubble')).map(b=>({type:b.dataset.type,x:b.style.left,y:b.style.top,text:b.querySelector('.binput')?.value||''}));}
+ 
+function collectBubbles(){
+  return Array.from(document.querySelectorAll('.comic-bubble')).map(b=>({
+    type:b.dataset.type,
+    x:b.style.left, y:b.style.top,
+    tailTx:parseFloat(b.dataset.tailTx)||10,
+    tailTy:parseFloat(b.dataset.tailTy)||60,
+    text:b.querySelector('.binput')?.value||''
+  }));
+}
 function restoreBubbles(data){
   document.getElementById('bubble-overlay').innerHTML='';
   if(!data)return;
-  data.forEach(bd=>{
-    addBubble(bd.type);
-    const all=document.querySelectorAll('.comic-bubble');
-    const last=all[all.length-1];
-    last.style.left=bd.x;last.style.top=bd.y;
-    const inp=last.querySelector('.binput');if(inp){inp.value=bd.text;inp.style.height=inp.scrollHeight+'px';}
-  });
+  data.forEach(bd=>addBubble(bd.type, bd));
 }
  
 // ── PLAYER ──
