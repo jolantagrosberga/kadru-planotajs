@@ -25,19 +25,36 @@
 }
  
 * { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
+html, body { width: 100%; height: 100%; overflow: hidden; }
 body {
   background: var(--bg-page);
   font-family: 'Courier Prime', monospace;
   color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 60px;
 }
- 
+
+/* ── 16:9 APP (1600×900, mērogojas uz ekrāna izmēru) ── */
+#app {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1600px; height: 900px;
+  transform-origin: 0 0;
+  background: var(--bg-page);
+  display: grid;
+  grid-template-columns: 464px 1fr;
+  grid-template-rows: 16px 56px 1fr;
+  column-gap: 16px;
+  row-gap: 0;
+  padding: 0 16px 16px;
+  overflow: hidden;
+}
+
 /* ── FILM STRIP ── */
 .film-strip {
+  grid-column: 1 / -1;
+  margin: 0 -16px;
   background: var(--strip-bg);
-  height: 28px;
+  height: 16px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--border);
@@ -45,41 +62,40 @@ body {
 }
 .sprocket-row {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   padding: 0 10px;
   animation: scroll-strip 8s linear infinite;
 }
 .sprocket {
-  width: 12px; height: 18px;
+  width: 10px; height: 9px;
   border: 1px solid var(--border2);
   border-radius: 2px;
   background: var(--strip-hole);
   flex-shrink: 0;
 }
-@keyframes scroll-strip { from{transform:translateX(0)} to{transform:translateX(-192px)} }
- 
+@keyframes scroll-strip { from{transform:translateX(0)} to{transform:translateX(-168px)} }
+
 /* ── HEADER ── */
 header {
+  grid-column: 1 / -1;
+  margin: 0 -16px 12px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
-  padding: 18px 24px 14px;
+  padding: 0 16px;
   display: flex;
-  align-items: flex-end;
-  gap: 20px;
-  flex-wrap: wrap;
-  position: relative;
+  align-items: center;
+  gap: 18px;
 }
 .header-eyebrow {
   font-family: 'Special Elite', cursive;
   font-size: 10px;
-  letter-spacing: 5px;
+  letter-spacing: 4px;
   color: var(--muted);
   text-transform: uppercase;
-  margin-bottom: 4px;
 }
 .logo {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(22px, 4vw, 34px);
+  font-size: 28px;
   font-weight: 700;
   color: var(--text);
   line-height: 1;
@@ -89,17 +105,16 @@ header {
   margin-left: auto;
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
   align-items: center;
 }
- 
+
 /* ── BUTTONS ── */
 .btn {
   font-family: 'Special Elite', cursive;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 8px 16px;
+  padding: 9px 18px;
   border: 1px solid var(--border2);
   background: var(--bg-surface);
   color: var(--text);
@@ -111,58 +126,52 @@ header {
 .btn:hover { background: var(--bg-panel); border-color: var(--border2); }
 .btn.primary { background: var(--rose); color: var(--white); border-color: var(--rose); }
 .btn.primary:hover { background: #a85f5f; }
-.btn.sm { font-size: 10px; padding: 5px 10px; }
+.btn.sm { font-size: 12px; padding: 7px 12px; }
 .btn.active-t { background: var(--gold); color: var(--white); border-color: var(--gold); }
- 
-/* ── MAIN WRAPPER ── */
-.workspace {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 16px 16px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
- 
-/* ── TOOLBAR (top) ── */
+.btn.fs { background: var(--sky); color: var(--white); border-color: var(--sky); }
+.btn.fs:hover { background: #557aa3; }
+
+/* ── TOOLBAR (kreisā kolonna) ── */
 .toolbar {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 14px 16px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  min-height: 0;
 }
 .ts {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding-right: 14px;
-  border-right: 1px solid var(--border);
+  gap: 7px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
-.ts:last-child { border-right: none; padding-right: 0; }
+.ts:last-child { border-bottom: none; padding-bottom: 0; }
 .ts-title {
   font-family: 'Special Elite', cursive;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--rose);
   white-space: nowrap;
 }
- 
+.ts-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
 /* Draw tools */
 .draw-grid {
   display: flex;
-  gap: 4px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 .tool-btn {
   font-family: 'Special Elite', cursive;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.5px;
-  padding: 5px 9px;
+  padding: 7px 11px;
   border: 1px solid var(--border);
   background: var(--bg-panel);
   color: var(--text);
@@ -174,9 +183,10 @@ header {
 }
 .tool-btn:hover { background: var(--border); }
 .tool-btn.active { background: var(--gold); color: var(--white); border-color: var(--gold); }
- 
+.shape-grid .tool-btn { font-size: 17px; padding: 4px 0; width: 46px; }
+
 /* Size dots */
-.size-row { display: flex; gap: 5px; align-items: center; }
+.size-row { display: flex; gap: 8px; align-items: center; }
 .sz-dot {
   border: 1px solid var(--border2);
   background: var(--bg-panel);
@@ -186,52 +196,55 @@ header {
   transition: all 0.12s;
 }
 .sz-dot:hover, .sz-dot.active { background: var(--gold); border-color: var(--gold); }
- 
+
 /* Color grid */
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(10,1fr);
-  gap: 3px;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
 }
 .csw {
-  width: 18px; height: 18px;
+  width: 30px; height: 30px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
   transition: transform 0.1s;
   flex-shrink: 0;
 }
-.csw:hover { transform: scale(1.2); }
-.csw.active { border-color: var(--text); transform: scale(1.15); }
- 
+.csw:hover { transform: scale(1.15); }
+.csw.active { border-color: var(--text); transform: scale(1.12); }
+
 /* Opacity row */
 .opacity-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 3px;
+  gap: 8px;
 }
- 
+.opacity-row .lbl { font-family:'Special Elite',cursive; font-size:11px; letter-spacing:2px; color:var(--muted); }
+#opacity-slider { flex:1; accent-color:var(--rose); height:4px; }
+#opacity-label { font-family:'Special Elite',cursive; font-size:12px; color:var(--muted); min-width:38px; text-align:right; }
+
 /* BG grid */
 .bg-grid {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 3px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 .bg-th {
-  width: 42px;
-  aspect-ratio: 4/3;
+  width: 100%;
+  aspect-ratio: 2/1;
   border-radius: 4px;
   border: 2px solid transparent;
   cursor: pointer;
   font-family: 'Special Elite', cursive;
-  font-size: 7px;
+  font-size: 11px;
   display: flex;
   align-items: flex-end;
-  padding: 2px 3px;
+  padding: 3px 5px;
   color: white;
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   transition: all 0.12s;
+  overflow: hidden;
 }
 .bg-th:hover { border-color: var(--border2); transform: scale(1.06); }
 .bg-th.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
@@ -243,18 +256,18 @@ header {
 .bg-space  { background: linear-gradient(180deg,#0a0020 0%,#1a0040 60%,#0d0d30 100%); }
 .bg-winter { background: linear-gradient(180deg,#ddeeff 45%,#e8f4ff 45%,#f0f8ff 100%); }
 .bg-autumn { background: linear-gradient(180deg,#b8a080 45%,#8b6914 45%,#6b4a0e 100%); }
- 
+
 /* FX */
 .fx-grid {
   display: flex;
-  gap: 4px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 .fx-btn {
   font-family: 'Special Elite', cursive;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.5px;
-  padding: 5px 8px;
+  padding: 7px 10px;
   border: 1px solid var(--border);
   background: var(--bg-panel);
   color: var(--text);
@@ -266,11 +279,26 @@ header {
 }
 .fx-btn:hover { background: var(--border); }
 .fx-btn.active { background: var(--sky); color: var(--white); border-color: var(--sky); }
- 
+
 /* Bubble btns */
-.bubble-row { display: flex; gap: 4px; flex-wrap: wrap; }
- 
+.bubble-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ── LABĀ KOLONNA: laukums + kadri + apakšjosla ── */
+.main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
 /* ── CANVAS STAGE ── */
+.stage-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
 .canvas-stage {
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -278,8 +306,9 @@ header {
   overflow: hidden;
   position: relative;
   box-shadow: 0 3px 16px rgba(0,0,0,0.07);
-  aspect-ratio: 520/340;
-  width: 100%;
+  aspect-ratio: 16/9;
+  height: 100%;
+  max-width: 100%;
 }
 #bg-canvas   { position:absolute; inset:0; width:100%; height:100%; display:block; }
 #main-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; background:transparent; }
@@ -291,35 +320,22 @@ header {
 .bubble-overlay {
   position: absolute; inset: 0;
   pointer-events: none; /* children override this */
+  z-index: 6;
 }
- 
-/* Frame controls row */
-.frame-ctrl {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 6px 0 2px;
-}
-.frame-num {
-  font-family: 'Special Elite', cursive;
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--muted);
-}
- 
-/* ── FRAME STRIP (below canvas) ── */
+
+/* ── FRAME STRIP ── */
 .frame-strip {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  justify-content: center;
   overflow-x: auto;
-  padding: 6px 2px 4px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 8px 12px 6px;
+  flex-shrink: 0;
 }
 .ft-wrap {
   flex-shrink: 0;
@@ -330,7 +346,7 @@ header {
   cursor: pointer;
 }
 .ft {
-  width: 100px; height: 67px;
+  width: 128px; height: 72px;
   border-radius: 5px;
   border: 2px solid var(--border);
   overflow: hidden;
@@ -341,13 +357,29 @@ header {
 .ft.active { border-color: var(--rose); box-shadow: 0 0 0 2px var(--rose); }
 .ft-label {
   font-family: 'Special Elite', cursive;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1px;
   color: var(--muted);
 }
 .ft-wrap:hover .ft { border-color: var(--border2); }
 .ft.active ~ .ft-label { color: var(--rose); }
- 
+
+/* ── APAKŠJOSLA ── */
+.bottom-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.frame-num {
+  font-family: 'Special Elite', cursive;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.bottom-bar .spacer { flex: 1; }
+
 /* ── COMIC BUBBLES ── */
 .comic-bubble {
   position: absolute;
@@ -358,21 +390,21 @@ header {
 .bshape {
   background: white;
   border: 2px solid var(--text);
-  padding: 7px 12px;
-  min-width: 76px;
+  padding: 9px 15px;
+  min-width: 100px;
   position: relative;
   font-family: 'Caveat', cursive;
-  font-size: 15px;
+  font-size: 22px;
   color: var(--text);
-  line-height: 1.3;
+  line-height: 1.25;
 }
-.bshape.speech { border-radius: 14px; }
-.bshape.thought { border-radius: 50%; min-width: 88px; min-height: 48px; display:flex; align-items:center; justify-content:center; }
+.bshape.speech { border-radius: 18px; }
+.bshape.thought { border-radius: 50%; min-width: 120px; min-height: 64px; display:flex; align-items:center; justify-content:center; }
 .bshape.shout   { border-radius: 3px; background: #fff9c4;
   clip-path: polygon(5% 0%,95% 0%,100% 5%,100% 95%,95% 100%,5% 100%,0% 95%,0% 5%); }
 .btail-handle {
   position:absolute;
-  width:12px; height:12px;
+  width:14px; height:14px;
   background: var(--gold);
   border: 2px solid var(--text);
   border-radius:50%;
@@ -389,75 +421,79 @@ header {
   overflow:visible;
   z-index:1;
 }
-.tdots { position:absolute; bottom:-17px; left:12px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+.tdots { position:absolute; bottom:-20px; left:14px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .tdot  { background:white; border:2px solid var(--text); border-radius:50%; }
 .binput {
   font-family: 'Caveat', cursive;
-  font-size: 15px;
+  font-size: 22px;
   background: transparent;
   border: none; outline: none;
   color: var(--text);
-  min-width: 58px; max-width: 140px; width: 100%;
+  min-width: 80px; max-width: 200px; width: 100%;
   text-align: center;
-  resize: none; cursor: text; line-height: 1.3;
+  resize: none; cursor: text; line-height: 1.25;
 }
 .bdel {
-  position:absolute; top:-8px; right:-8px;
-  width:17px; height:17px;
+  position:absolute; top:-9px; right:-9px;
+  width:20px; height:20px;
   background: var(--rose); color: white;
   border:none; border-radius:50%;
-  font-size:11px; cursor:pointer;
+  font-size:13px; cursor:pointer;
   display:none; align-items:center; justify-content:center;
   line-height:1; z-index:10;
 }
 .comic-bubble:hover .bdel { display:flex; }
- 
-/* ── PLAYER ── */
+
+/* ── PLAYER (pārklājums virs laukuma) ── */
 .player-wrap {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(30,24,16,0.94);
   border-radius: 10px;
-  padding: 20px;
-  margin-top: 18px;
+  padding: 18px;
 }
+.player-wrap.open { display: flex; }
 .player-title {
   font-family: 'Special Elite', cursive;
-  font-size: 11px;
-  letter-spacing: 4px;
+  font-size: 13px;
+  letter-spacing: 5px;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
+  color: #e8e0d4;
 }
 .player-stage {
   position: relative;
   background: #0d0b08;
   border-radius: 7px;
   overflow: hidden;
-  aspect-ratio: 520/340;
+  aspect-ratio: 16/9;
+  flex: 1;
+  min-height: 0;
   max-width: 100%;
-  margin: 0 auto;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.4);
 }
 #player-canvas { display:block; width:100%; height:100%; }
 #fx-player-canvas { position:absolute; inset:0; pointer-events:none; width:100%; height:100%; }
 .player-ctrl {
   display:flex; gap:8px;
   justify-content:center;
-  margin-top:12px;
   flex-wrap:wrap; align-items:center;
 }
-.sp-label { font-family:'Special Elite',cursive; font-size:10px; letter-spacing:2px; color:var(--muted); }
- 
-/* ── RESPONSIVE ── */
-@media (max-width:600px) {
-  .color-grid { grid-template-columns: repeat(5,1fr); }
-  .bg-grid { grid-template-columns: repeat(4,1fr); }
-}
+.sp-label { font-family:'Special Elite',cursive; font-size:12px; letter-spacing:2px; color:#e8e0d4; }
+
 </style>
 </head>
 <body>
- 
+
+<div id="app">
+
 <div class="film-strip"><div class="sprocket-row" id="sprockets"></div></div>
- 
+
 <header>
   <div>
     <div class="header-eyebrow">Interaktīvs metodiskais materiāls</div>
@@ -467,41 +503,43 @@ header {
     <button class="btn primary" onclick="playFilm()">▶ Atskaņot filmiņu</button>
   </div>
 </header>
- 
-<div class="workspace">
- 
-  <!-- ── TOOLBAR (top) ── -->
+
+  <!-- ── TOOLBAR (kreisā kolonna) ── -->
   <div class="toolbar">
- 
+
     <div class="ts">
       <div class="ts-title">✏️ Zīmēšana</div>
-      <div class="draw-grid">
-        <button class="tool-btn active" id="tool-pen"    onclick="setTool('pen')">✏️ Pildspalva</button>
-        <button class="tool-btn"        id="tool-marker" onclick="setTool('marker')">🖌 Marķieris</button>
-        <button class="tool-btn"        id="tool-eraser" onclick="setTool('eraser')">⬜ Dzēst</button>
+      <div class="ts-row">
+        <div class="draw-grid">
+          <button class="tool-btn active" id="tool-pen"    onclick="setTool('pen')">✏️ Pildspalva</button>
+          <button class="tool-btn"        id="tool-marker" onclick="setTool('marker')">🖌 Marķieris</button>
+          <button class="tool-btn"        id="tool-eraser" onclick="setTool('eraser')">⬜ Dzēst</button>
+        </div>
       </div>
-      <div class="ts-title" style="margin-top:4px;">Izmērs</div>
-      <div class="size-row">
-        <div class="sz-dot active" id="sz-2"  onclick="setSize(2,this)"  style="width:12px;height:12px;"></div>
-        <div class="sz-dot"        id="sz-5"  onclick="setSize(5,this)"  style="width:18px;height:18px;"></div>
-        <div class="sz-dot"        id="sz-10" onclick="setSize(10,this)" style="width:24px;height:24px;"></div>
-        <div class="sz-dot"        id="sz-20" onclick="setSize(20,this)" style="width:32px;height:32px;"></div>
+      <div class="ts-row">
+        <div class="ts-title" style="color:var(--muted);">Izmērs</div>
+        <div class="size-row">
+          <div class="sz-dot active" id="sz-2"  onclick="setSize(2,this)"  style="width:14px;height:14px;"></div>
+          <div class="sz-dot"        id="sz-5"  onclick="setSize(5,this)"  style="width:20px;height:20px;"></div>
+          <div class="sz-dot"        id="sz-10" onclick="setSize(10,this)" style="width:27px;height:27px;"></div>
+          <div class="sz-dot"        id="sz-20" onclick="setSize(20,this)" style="width:35px;height:35px;"></div>
+        </div>
       </div>
     </div>
- 
+
     <div class="ts">
       <div class="ts-title">🎨 Krāsas</div>
       <div class="color-grid" id="color-grid"></div>
       <div class="opacity-row">
-        <span style="font-family:'Special Elite',cursive;font-size:8px;letter-spacing:2px;color:var(--muted);">CAURSP.</span>
-        <input type="range" id="opacity-slider" min="5" max="100" value="100" style="flex:1;accent-color:var(--rose);height:3px;" oninput="setOpacity(this.value)">
-        <span id="opacity-label" style="font-family:'Special Elite',cursive;font-size:9px;color:var(--muted);min-width:26px;">100%</span>
+        <span class="lbl">CAURSP.</span>
+        <input type="range" id="opacity-slider" min="5" max="100" value="100" oninput="setOpacity(this.value)">
+        <span id="opacity-label">100%</span>
       </div>
     </div>
- 
+
     <div class="ts">
       <div class="ts-title">⬡ Figūras</div>
-      <div class="draw-grid">
+      <div class="draw-grid shape-grid">
         <button class="tool-btn" id="tool-rect"     onclick="setTool('rect')"     title="Taisnstūris">▭</button>
         <button class="tool-btn" id="tool-square"   onclick="setTool('square')"   title="Kvadrāts">■</button>
         <button class="tool-btn" id="tool-circle"   onclick="setTool('circle')"   title="Aplis">●</button>
@@ -510,12 +548,12 @@ header {
         <button class="tool-btn" id="tool-star"     onclick="setTool('star')"     title="Zvaigzne">★</button>
         <button class="tool-btn" id="tool-move"     onclick="setTool('move')"     title="Pārvietot">✥</button>
       </div>
-      <div style="display:flex;gap:4px;margin-top:4px;">
-        <button class="tool-btn" id="fill-no"  onclick="setFill(false,this)" style="font-size:9px;">◻ Kontūra</button>
-        <button class="tool-btn active" id="fill-yes" onclick="setFill(true,this)" style="font-size:9px;">◼ Pilna</button>
+      <div style="display:flex;gap:5px;">
+        <button class="tool-btn" id="fill-no"  onclick="setFill(false,this)">◻ Kontūra</button>
+        <button class="tool-btn active" id="fill-yes" onclick="setFill(true,this)">◼ Pilna</button>
       </div>
     </div>
- 
+
     <div class="ts">
       <div class="ts-title">🌄 Fons</div>
       <div class="bg-grid">
@@ -529,7 +567,7 @@ header {
         <div class="bg-th bg-autumn"       data-bg="autumn" onclick="setBg(this)">Rudens</div>
       </div>
     </div>
- 
+
     <div class="ts">
       <div class="ts-title">⚡ Efekti</div>
       <div class="fx-grid">
@@ -540,7 +578,7 @@ header {
         <button class="fx-btn" id="fx-leaves"    onclick="toggleFx('leaves')">🍂 Lapas</button>
       </div>
     </div>
- 
+
     <div class="ts">
       <div class="ts-title">💬 Runas logs</div>
       <div class="bubble-row">
@@ -549,52 +587,64 @@ header {
         <button class="btn sm" onclick="addBubble('shout')">💥 Sauciens</button>
       </div>
     </div>
- 
+
   </div><!-- /toolbar -->
- 
-  <!-- ── CANVAS ── -->
-  <div class="canvas-stage" id="canvas-stage">
-    <canvas id="bg-canvas"   width="520" height="340"></canvas>
-    <canvas id="main-canvas" width="520" height="340"></canvas>
-    <canvas id="fx-canvas" class="fx-canvas-el" width="520" height="340"></canvas>
-    <div class="bubble-overlay" id="bubble-overlay"></div>
-  </div>
- 
-  <!-- frame info + clear -->
-  <div class="frame-ctrl">
-    <span class="frame-num" id="frame-num">KADRS 1 / 7</span>
-    <button class="btn sm" onclick="clearCurrentFrame()">✕ Notīrīt kadru</button>
-    <button class="btn sm" onclick="duplicateFrame()">📋 Dublēt kadru</button>
-  </div>
- 
-  <!-- ── FRAME STRIP (below canvas) ── -->
-  <div class="frame-strip" id="frame-strip"></div>
- 
-</div>
- 
-<!-- PLAYER -->
-<div style="max-width:960px;margin:0 auto;padding:0 16px 40px;">
-<div class="player-wrap" id="player-wrap" style="display:none;">
-  <div class="player-title">✦ Filmiņa</div>
-  <div class="player-stage">
-    <canvas id="player-canvas" width="520" height="340"></canvas>
-    <canvas id="fx-player-canvas" width="520" height="340"></canvas>
-  </div>
-  <div class="player-ctrl">
-    <button class="btn primary" id="play-btn" onclick="togglePlay()">⏸ Pauze</button>
-    <button class="btn" onclick="stopFilm()">⏹ Apturēt</button>
-    <span class="sp-label">Ātrums:</span>
-    <button class="btn sm" onclick="setSpeed(1300)">🐢</button>
-    <button class="btn sm active-t" onclick="setSpeed(700)">▶</button>
-    <button class="btn sm" onclick="setSpeed(320)">⚡</button>
-    <span class="sp-label" id="frame-counter">1/7</span>
-  </div>
-</div>
-</div>
+
+  <!-- ── LABĀ KOLONNA ── -->
+  <div class="main-col">
+
+    <div class="stage-wrap">
+      <!-- ── CANVAS ── -->
+      <div class="canvas-stage" id="canvas-stage">
+        <canvas id="bg-canvas"   width="1280" height="720"></canvas>
+        <canvas id="main-canvas" width="1280" height="720"></canvas>
+        <canvas id="fx-canvas" class="fx-canvas-el" width="1280" height="720"></canvas>
+        <div class="bubble-overlay" id="bubble-overlay"></div>
+      </div>
+
+      <!-- PLAYER (pārklājums) -->
+      <div class="player-wrap" id="player-wrap">
+        <div class="player-title">✦ Filmiņa</div>
+        <div class="player-stage">
+          <canvas id="player-canvas" width="1280" height="720"></canvas>
+          <canvas id="fx-player-canvas" width="1280" height="720"></canvas>
+        </div>
+        <div class="player-ctrl">
+          <button class="btn primary" id="play-btn" onclick="togglePlay()">⏸ Pauze</button>
+          <button class="btn" onclick="stopFilm()">⏹ Aizvērt</button>
+          <span class="sp-label">Ātrums:</span>
+          <button class="btn sm sp-btn" onclick="setSpeed(1300,this)">🐢</button>
+          <button class="btn sm sp-btn active-t" onclick="setSpeed(700,this)">▶</button>
+          <button class="btn sm sp-btn" onclick="setSpeed(320,this)">⚡</button>
+          <span class="sp-label" id="frame-counter">1/7</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FRAME STRIP ── -->
+    <div class="frame-strip" id="frame-strip"></div>
+
+    <!-- ── APAKŠJOSLA ── -->
+    <div class="bottom-bar">
+      <span class="frame-num" id="frame-num">KADRS 1 / 7</span>
+      <button class="btn sm" onclick="clearCurrentFrame()">✕ Notīrīt kadru</button>
+      <button class="btn sm" onclick="duplicateFrame()">📋 Dublēt kadru</button>
+      <span class="spacer"></span>
+      <button class="btn fs" id="fs-btn" onclick="toggleFullscreen()">⛶ Atvērt pilnekrānu</button>
+    </div>
+
+  </div><!-- /main-col -->
+
+</div><!-- /app -->
+
  
 <script>
 // ── STATE ──
-const MAX_FRAMES=7, CW=520, CH=340;
+const MAX_FRAMES=7, CW=1280, CH=720;
+// Foni un efekti zīmēti atsauces telpā (REF), tad mērogoti uz jebkuru izmēru
+const REF_W=604, REF_H=340;
+const LW=CW/REF_W; // līniju biezuma koeficients (lai izmēri izskatās kā iepriekš)
+let APP_SCALE=1;
 const frames=[];
 let currentFrame=0, currentTool='pen', currentColor='#2c2318', currentSize=2;
 let shapeFilled=true;
@@ -647,7 +697,7 @@ function renderStrip(){
     const wrap=document.createElement('div'); wrap.className='ft-wrap';
     const thumb=document.createElement('div'); thumb.className='ft'+(i===currentFrame?' active':'');
     thumb.id='ft-'+i; thumb.onclick=()=>selectFrame(i);
-    const tc=document.createElement('canvas'); tc.width=90; tc.height=60;
+    const tc=document.createElement('canvas'); tc.width=256; tc.height=144;
     thumb.appendChild(tc); drawThumb(i,tc);
     const lbl=document.createElement('div'); lbl.className='ft-label';
     lbl.textContent='KADRS '+(i+1);
@@ -659,10 +709,11 @@ function renderStrip(){
  
 function drawThumb(idx,canvas){
   const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,90,60);
+  const tw=canvas.width, th=canvas.height;
+  ctx.clearRect(0,0,tw,th);
   const f=frames[idx]; if(!f) return;
-  drawBg(ctx,f.bg,90,60);
-  if(f.imageData){const tmp=document.createElement('canvas');tmp.width=CW;tmp.height=CH;tmp.getContext('2d').putImageData(f.imageData,0,0);ctx.drawImage(tmp,0,0,90,60);}
+  drawBg(ctx,f.bg,tw,th);
+  if(f.imageData){const tmp=document.createElement('canvas');tmp.width=CW;tmp.height=CH;tmp.getContext('2d').putImageData(f.imageData,0,0);ctx.drawImage(tmp,0,0,tw,th);}
 }
  
 function updateThumb(){const tc=document.querySelector('#ft-'+currentFrame+' canvas');if(tc)drawThumb(currentFrame,tc);}
@@ -746,11 +797,12 @@ const BG_DEFS={
   },
   city:(ctx,w,h)=>{
     const sky=ctx.createLinearGradient(0,0,0,h*0.48); sky.addColorStop(0,'#c8d8e8'); sky.addColorStop(1,'#e8f0f8');
-    ctx.fillStyle=sky; ctx.fillRect(0,0,w,h*0.48);
+    ctx.fillStyle=sky; ctx.fillRect(0,0,w,h*0.72);
     ctx.fillStyle='#555'; ctx.fillRect(0,h*0.75,w,h*0.25);
     ctx.fillStyle='#aaa'; ctx.fillRect(0,h*0.71,w,h*0.04);
     ctx.fillStyle='#fff'; ctx.fillRect(0,h*0.865,w,3);
-    [{x:0,bw:70,bh:h*0.5,c:'#778899'},{x:74,bw:54,bh:h*0.38,c:'#8899aa'},{x:132,bw:80,bh:h*0.58,c:'#667788'},{x:218,bw:60,bh:h*0.34,c:'#99aabb'},{x:283,bw:74,bh:h*0.5,c:'#7788a0'},{x:362,bw:50,bh:h*0.41,c:'#8899b0'},{x:417,bw:103,bh:h*0.54,c:'#6677a0'}].forEach(b=>{
+    const kx=w/520;
+    [{x:0,bw:70,bh:h*0.5,c:'#778899'},{x:74,bw:54,bh:h*0.38,c:'#8899aa'},{x:132,bw:80,bh:h*0.58,c:'#667788'},{x:218,bw:60,bh:h*0.34,c:'#99aabb'},{x:283,bw:74,bh:h*0.5,c:'#7788a0'},{x:362,bw:50,bh:h*0.41,c:'#8899b0'},{x:417,bw:103,bh:h*0.54,c:'#6677a0'}].map(b=>({...b,x:b.x*kx,bw:b.bw*kx})).forEach(b=>{
       ctx.fillStyle=b.c; ctx.fillRect(b.x,h*0.72-b.bh,b.bw,b.bh);
       ctx.fillStyle='rgba(255,255,180,0.65)';
       for(let wy=h*0.72-b.bh+7;wy<h*0.72-8;wy+=17) for(let wx=b.x+5;wx<b.x+b.bw-6;wx+=13) ctx.fillRect(wx,wy,7,9);
@@ -767,7 +819,7 @@ const BG_DEFS={
         ctx.beginPath(); ctx.moveTo(x+dx,y+dy); ctx.lineTo(x+dx-r,y+dy+r*1.2); ctx.lineTo(x+dx+r,y+dy+r*1.2); ctx.closePath(); ctx.fill();
       });
     }
-    [50,130,220,320,418,490].forEach((x,i)=>tree(x,h*0.34+i%2*10,58+i%3*18));
+    [50,130,220,320,418,490].forEach((x,i)=>tree(x*w/520,h*0.34+i%2*10,58+i%3*18));
     ctx.fillStyle='rgba(27,94,32,0.8)'; ctx.fillRect(0,h*0.62,w,h*0.38);
   },
   space:(ctx,w,h)=>{
@@ -822,7 +874,11 @@ const BG_DEFS={
   }
 };
  
-function drawBg(ctx,name,w,h){ (BG_DEFS[name]||BG_DEFS.blank)(ctx,w,h); }
+function drawBg(ctx,name,w,h){
+  ctx.save(); ctx.scale(w/REF_W,h/REF_H);
+  (BG_DEFS[name]||BG_DEFS.blank)(ctx,REF_W,REF_H);
+  ctx.restore();
+}
  
 function setBg(el){
   const bg=el.dataset.bg;
@@ -892,9 +948,9 @@ function redrawShapes(highlightIdx){
       shapeCtx.save();
       shapeCtx.globalAlpha=0.7;
       shapeCtx.strokeStyle='#b8923a';
-      shapeCtx.lineWidth=1.5;
+      shapeCtx.lineWidth=1.5*LW;
       shapeCtx.setLineDash([5,3]);
-      const pad=4;
+      const pad=4*LW;
       shapeCtx.strokeRect(s.x1-pad,s.y1-pad,(s.x2-s.x1)+pad*2,(s.y2-s.y1)+pad*2);
       shapeCtx.restore();
     }
@@ -906,7 +962,7 @@ function renderShapeObj(ctx,s){
   ctx.globalAlpha=s.opacity;
   ctx.strokeStyle=s.color;
   ctx.fillStyle=s.color;
-  ctx.lineWidth=Math.max(s.lineWidth,1.5);
+  ctx.lineWidth=Math.max(s.lineWidth,1.5)*LW;
   ctx.lineCap='round'; ctx.lineJoin='round';
   const x1=s.x1,y1=s.y1,x2=s.x2,y2=s.y2,w=x2-x1,h=y2-y1;
   ctx.beginPath();
@@ -938,8 +994,9 @@ function hitTestShape(px,py){
   // Find topmost shape under point (reverse order)
   for(let i=shapeObjects.length-1;i>=0;i--){
     const s=shapeObjects[i];
-    const minX=Math.min(s.x1,s.x2)-8, maxX=Math.max(s.x1,s.x2)+8;
-    const minY=Math.min(s.y1,s.y2)-8, maxY=Math.max(s.y1,s.y2)+8;
+    const m=8*LW;
+    const minX=Math.min(s.x1,s.x2)-m, maxX=Math.max(s.x1,s.x2)+m;
+    const minY=Math.min(s.y1,s.y2)-m, maxY=Math.max(s.y1,s.y2)+m;
     if(px>=minX&&px<=maxX&&py>=minY&&py<=maxY) return i;
   }
   return -1;
@@ -1016,7 +1073,7 @@ function previewShape(e){
   drawShapeToCtx(previewCtx,currentTool,shapeStartX,shapeStartY,cx,cy,currentColor,currentOpacity*0.55,shapeFilled,currentSize);
 }
 function commitShape(e){
-  const [cx,cy]=e&&(e.changedTouches||e.clientX!=null)?cpos(e):[shapeStartX+2,shapeStartY+2];
+  const [cx,cy]=e&&(e.changedTouches||e.clientX!=null)?cpos(e):[shapeStartX+2*LW,shapeStartY+2*LW];
   ensureShapeCanvas();
   // Store as object for later moving
   shapeObjects.push({type:currentTool,x1:shapeStartX,y1:shapeStartY,x2:cx,y2:cy,color:currentColor,opacity:currentOpacity,filled:shapeFilled,lineWidth:currentSize});
@@ -1028,7 +1085,7 @@ function drawShapeToCtx(ctx,type,x1,y1,x2,y2,color,alpha,filled,lw){
   ctx.save();
   ctx.globalAlpha=alpha;
   ctx.strokeStyle=color; ctx.fillStyle=color;
-  ctx.lineWidth=Math.max(lw,1.5);
+  ctx.lineWidth=Math.max(lw,1.5)*LW;
   ctx.lineCap='round'; ctx.lineJoin='round';
   const w=x2-x1,h=y2-y1;
   ctx.beginPath();
@@ -1059,17 +1116,17 @@ function doDraw(e){
   if(currentTool==='eraser'){
     ctx.globalCompositeOperation='destination-out';
     ctx.strokeStyle='rgba(0,0,0,1)';
-    ctx.lineWidth=currentSize*4;
+    ctx.lineWidth=currentSize*4*LW;
   } else if(currentTool==='marker'){
     ctx.globalCompositeOperation='source-over';
     ctx.globalAlpha=currentOpacity*0.6;
     ctx.strokeStyle=currentColor;
-    ctx.lineWidth=currentSize*2.5;
+    ctx.lineWidth=currentSize*2.5*LW;
   } else {
     ctx.globalCompositeOperation='source-over';
     ctx.globalAlpha=currentOpacity;
     ctx.strokeStyle=currentColor;
-    ctx.lineWidth=currentSize;
+    ctx.lineWidth=currentSize*LW;
   }
   ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(cx,cy); ctx.stroke();
   ctx.globalCompositeOperation='source-over';
@@ -1084,10 +1141,13 @@ function toggleFx(name){
   if(activeFx===name){activeFx=null;frames[currentFrame].fx=null;document.getElementById('fx-'+name).classList.remove('active');stopFxAnim();}
   else{if(activeFx)document.getElementById('fx-'+activeFx)?.classList.remove('active');activeFx=name;frames[currentFrame].fx=name;document.getElementById('fx-'+name).classList.add('active');stopFxAnim();startFxAnim();}
 }
-function stopFxAnim(){if(fxAnimId){cancelAnimationFrame(fxAnimId);fxAnimId=null;}document.getElementById('fx-canvas').getContext('2d').clearRect(0,0,CW,CH);rainDrops=[];snowFlakes=[];leafParticles=[];}
+function stopFxAnim(){if(fxAnimId){cancelAnimationFrame(fxAnimId);fxAnimId=null;}const fxc=document.getElementById('fx-canvas').getContext('2d');fxc.setTransform(1,0,0,1,0,0);fxc.clearRect(0,0,CW,CH);rainDrops=[];snowFlakes=[];leafParticles=[];}
 function startFxAnim(){runFx(document.getElementById('fx-canvas').getContext('2d'),activeFx,false,CW,CH);}
  
-function runFx(ctx,fx,isPlayer,w,h){
+function runFx(ctx,fx,isPlayer,cw,ch){
+  // efekti darbojas atsauces telpā un tiek mērogoti uz kanvu
+  ctx.setTransform(cw/REF_W,0,0,ch/REF_H,0,0);
+  const w=REF_W, h=REF_H;
   if(fx==='rain')    fxRain(ctx,isPlayer,w,h);
   else if(fx==='snow')     fxSnow(ctx,isPlayer,w,h);
   else if(fx==='sun')      fxSun(ctx,isPlayer,w,h);
@@ -1206,7 +1266,7 @@ function addBubble(type, restoreData){
     tailHandle.title='Vilkt knābīti';
     // Default tail position: below-left of bubble
     tailTx = restoreData?.tailTx ?? 10;
-    tailTy = restoreData?.tailTy ?? 60;
+    tailTy = restoreData?.tailTy ?? 80;
     tailHandle.style.left=tailTx+'px';
     tailHandle.style.top=tailTy+'px';
     bubble.appendChild(tailHandle);
@@ -1263,10 +1323,10 @@ function addBubble(type, restoreData){
       function onMove(e){
         const src=e.touches?e.touches[0]:e;
         const br=bubble.getBoundingClientRect();
-        tailTx=src.clientX-br.left;
-        tailTy=src.clientY-br.top;
-        tailHandle.style.left=(tailTx-6)+'px';
-        tailHandle.style.top=(tailTy-6)+'px';
+        tailTx=(src.clientX-br.left)/APP_SCALE;
+        tailTy=(src.clientY-br.top)/APP_SCALE;
+        tailHandle.style.left=(tailTx-7)+'px';
+        tailHandle.style.top=(tailTy-7)+'px';
         bubble.dataset.tailTx=tailTx;
         bubble.dataset.tailTy=tailTy;
         updateTailSvg();
@@ -1306,8 +1366,8 @@ function makeDraggable(el, onMove){
     const origL=parseInt(el.style.left)||0, origT=parseInt(el.style.top)||0;
     function mv(e){
       const s=e.touches?e.touches[0]:e;
-      el.style.left=(origL+s.clientX-startX)+'px';
-      el.style.top=(origT+s.clientY-startY)+'px';
+      el.style.left=(origL+(s.clientX-startX)/APP_SCALE)+'px';
+      el.style.top=(origT+(s.clientY-startY)/APP_SCALE)+'px';
       if(onMove) onMove();
     }
     function up(){
@@ -1330,7 +1390,7 @@ function collectBubbles(){
     type:b.dataset.type,
     x:b.style.left, y:b.style.top,
     tailTx:parseFloat(b.dataset.tailTx)||10,
-    tailTy:parseFloat(b.dataset.tailTy)||60,
+    tailTy:parseFloat(b.dataset.tailTy)||80,
     text:b.querySelector('.binput')?.value||''
   }));
 }
@@ -1343,8 +1403,7 @@ function restoreBubbles(data){
 // ── PLAYER ──
 function playFilm(){
   saveCurrentFrame();
-  document.getElementById('player-wrap').style.display='block';
-  document.getElementById('player-wrap').scrollIntoView({behavior:'smooth'});
+  document.getElementById('player-wrap').classList.add('open');
   playerFrame=0;playerRunning=true;
   document.getElementById('play-btn').textContent='⏸ Pauze';
   runPlayer();
@@ -1357,9 +1416,10 @@ function runPlayer(){
 function showPFrame(idx){
   const c=document.getElementById('player-canvas'),ctx=c.getContext('2d'),f=frames[idx];
   ctx.clearRect(0,0,CW,CH);drawBg(ctx,f.bg,CW,CH);
-  if(f.imageData)ctx.putImageData(f.imageData,0,0);
+  // zīmējumu liek virs fona ar drawImage (putImageData aizstātu fonu ar caurspīdīgiem pikseļiem)
+  if(f.imageData){const tmp=document.createElement('canvas');tmp.width=CW;tmp.height=CH;tmp.getContext('2d').putImageData(f.imageData,0,0);ctx.drawImage(tmp,0,0);}
   if(playerFxAnim){cancelAnimationFrame(playerFxAnim);playerFxAnim=null;}
-  const fc=document.getElementById('fx-player-canvas');fc.getContext('2d').clearRect(0,0,CW,CH);
+  const fc=document.getElementById('fx-player-canvas');fc.getContext('2d').setTransform(1,0,0,1,0,0);fc.getContext('2d').clearRect(0,0,CW,CH);
   if(f.fx)runFx(fc.getContext('2d'),f.fx,true,CW,CH);
   document.getElementById('frame-counter').textContent=`${idx+1}/${MAX_FRAMES}`;
 }
@@ -1371,11 +1431,53 @@ function togglePlay(){
 function stopFilm(){
   playerRunning=false;clearTimeout(playerTimer);
   if(playerFxAnim){cancelAnimationFrame(playerFxAnim);playerFxAnim=null;}
-  document.getElementById('player-wrap').style.display='none';
+  document.getElementById('player-wrap').classList.remove('open');
 }
-function setSpeed(ms){playerSpeed=ms;clearTimeout(playerTimer);if(playerRunning)runPlayer();}
+function setSpeed(ms,el){
+  playerSpeed=ms;
+  if(el){document.querySelectorAll('.sp-btn').forEach(b=>b.classList.remove('active-t'));el.classList.add('active-t');}
+  clearTimeout(playerTimer);if(playerRunning)runPlayer();
+}
+
+// ── 16:9 MĒROGOŠANA ──
+function fitApp(){
+  const app=document.getElementById('app');
+  const W=window.innerWidth, H=window.innerHeight;
+  APP_SCALE=Math.min(W/1600,H/900);
+  app.style.transform=`scale(${APP_SCALE})`;
+  app.style.left=Math.max(0,(W-1600*APP_SCALE)/2)+'px';
+  app.style.top=Math.max(0,(H-900*APP_SCALE)/2)+'px';
+}
+window.addEventListener('resize',fitApp);
+
+// ── PILNEKRĀNS ──
+function isFullscreen(){ return !!(document.fullscreenElement||document.webkitFullscreenElement); }
+function toggleFullscreen(){
+  const el=document.documentElement;
+  if(isFullscreen()){
+    (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    return;
+  }
+  const canFs=document.fullscreenEnabled||document.webkitFullscreenEnabled;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(canFs&&req){
+    const p=req.call(el);
+    if(p&&p.catch) p.catch(()=>fsFallback());
+  } else fsFallback();
+}
+function fsFallback(){
+  if(confirm('Pilnekrāna režīms šajā lapā nav atļauts.\nAtvērt rīku jaunā cilnē? (Jau uzzīmētais netiks pārnests.)'))
+    window.open(location.href,'_blank');
+}
+function updateFsBtn(){
+  document.getElementById('fs-btn').textContent=isFullscreen()?'✕ Iziet no pilnekrāna':'⛶ Atvērt pilnekrānu';
+  setTimeout(fitApp,60);
+}
+document.addEventListener('fullscreenchange',updateFsBtn);
+document.addEventListener('webkitfullscreenchange',updateFsBtn);
  
 // ── INIT ──
+fitApp();
 initColorGrid();
 initFrames();
 </script>
